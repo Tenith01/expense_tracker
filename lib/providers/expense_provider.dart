@@ -74,7 +74,8 @@ class ExpenseProvider extends ChangeNotifier {
         category: _selectedCategory,
       );
     } catch (e) {
-      _errorMessage = 'Failed to load expenses. Please try again.';
+      debugPrint('Firestore fetch error: $e');
+      _errorMessage = 'Failed to load expenses.\n$e';
       _expenses = [];
     }
 
