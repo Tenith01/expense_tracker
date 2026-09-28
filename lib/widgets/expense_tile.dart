@@ -1,6 +1,7 @@
 // lib/widgets/expense_tile.dart
 
 import 'package:flutter/material.dart';
+
 import '../models/expense.dart';
 import '../utils/constants.dart';
 import '../utils/formatters.dart';
@@ -119,11 +120,7 @@ class ExpenseTile extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Icon(
-                      category.icon,
-                      color: category.color,
-                      size: 22,
-                    ),
+                    child: Icon(category.icon, color: category.color, size: 22),
                   ),
                   const SizedBox(width: 14),
 
@@ -171,8 +168,9 @@ class ExpenseTile extends StatelessWidget {
                       Text(
                         AppFormatters.shortDate(expense.date),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant
-                              .withValues(alpha: 0.7),
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.7,
+                          ),
                           fontSize: 11,
                         ),
                       ),

@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/auth_provider.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,13 +36,10 @@ class _LoginScreenState extends State<LoginScreen>
       parent: _animController,
       curve: Curves.easeOut,
     );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeOutCubic,
-    ));
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
     _animController.forward();
   }
 
@@ -121,7 +118,8 @@ class _LoginScreenState extends State<LoginScreen>
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF00897B).withValues(alpha: 0.3),
+                            color: const Color(0xFF00897B)
+                                .withValues(alpha: 0.3),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -186,11 +184,14 @@ class _LoginScreenState extends State<LoginScreen>
                               labelText: 'Password',
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
-                                icon: Icon(_obscurePassword
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined),
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                ),
                                 onPressed: () => setState(
-                                    () => _obscurePassword = !_obscurePassword),
+                                  () => _obscurePassword = !_obscurePassword,
+                                ),
                               ),
                             ),
                             validator: (value) {
@@ -238,8 +239,9 @@ class _LoginScreenState extends State<LoginScreen>
                           width: double.infinity,
                           height: 52,
                           child: FilledButton(
-                            onPressed:
-                                authProvider.isLoading ? null : _handleEmailLogin,
+                            onPressed: authProvider.isLoading
+                                ? null
+                                : _handleEmailLogin,
                             style: FilledButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
@@ -271,9 +273,7 @@ class _LoginScreenState extends State<LoginScreen>
                     Row(
                       children: [
                         Expanded(
-                          child: Divider(
-                            color: colorScheme.outlineVariant,
-                          ),
+                          child: Divider(color: colorScheme.outlineVariant),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -286,9 +286,7 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                         ),
                         Expanded(
-                          child: Divider(
-                            color: colorScheme.outlineVariant,
-                          ),
+                          child: Divider(color: colorScheme.outlineVariant),
                         ),
                       ],
                     ),
@@ -336,9 +334,7 @@ class _LoginScreenState extends State<LoginScreen>
                       children: [
                         Text(
                           "Don't have an account? ",
-                          style: TextStyle(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                          style: TextStyle(color: colorScheme.onSurfaceVariant),
                         ),
                         TextButton(
                           onPressed: () {
@@ -355,8 +351,7 @@ class _LoginScreenState extends State<LoginScreen>
                               vertical: 2,
                             ),
                             minimumSize: Size.zero,
-                            tapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: Text(
                             'Sign Up',

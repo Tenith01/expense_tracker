@@ -1,6 +1,7 @@
 // lib/widgets/month_selector.dart
 
 import 'package:flutter/material.dart';
+
 import '../utils/formatters.dart';
 
 /// A horizontal month navigator with left/right arrows.
@@ -80,9 +81,10 @@ class MonthSelector extends StatelessWidget {
           decoration: BoxDecoration(
             color: isEnabled
                 ? (isDark
-                    ? const Color(0xFF253345)
-                    : theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.5))
+                      ? const Color(0xFF253345)
+                      : theme.colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        ))
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),

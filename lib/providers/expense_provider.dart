@@ -1,6 +1,7 @@
 // lib/providers/expense_provider.dart
 
 import 'package:flutter/material.dart';
+
 import '../models/expense.dart';
 import '../services/firestore_service.dart';
 
@@ -25,8 +26,7 @@ class ExpenseProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   /// Total of all currently-visible expenses.
-  double get totalExpenses =>
-      _expenses.fold(0.0, (sum, e) => sum + e.amount);
+  double get totalExpenses => _expenses.fold(0.0, (sum, e) => sum + e.amount);
 
   /// Group expenses by date for sectioned list display.
   Map<String, List<Expense>> get groupedExpenses {
@@ -55,14 +55,12 @@ class ExpenseProvider extends ChangeNotifier {
   // ── Month Navigation ───────────────────────────────────────────────────
 
   void goToPreviousMonth() {
-    _selectedMonth =
-        DateTime(_selectedMonth.year, _selectedMonth.month - 1, 1);
+    _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month - 1, 1);
     fetchExpenses();
   }
 
   void goToNextMonth() {
-    _selectedMonth =
-        DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
+    _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
     fetchExpenses();
   }
 

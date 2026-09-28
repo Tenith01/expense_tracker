@@ -65,8 +65,7 @@ class AuthService {
       await googleSignIn.initialize();
 
       // Trigger interactive authentication.
-      final GoogleSignInAccount googleUser =
-          await googleSignIn.authenticate();
+      final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
 
       // Get the ID token from the authentication result.
       final idToken = googleUser.authentication.idToken;

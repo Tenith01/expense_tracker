@@ -2,7 +2,9 @@
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+
 import '../models/expense.dart';
+
 import 'package:intl/intl.dart';
 
 class ExpenseBarChart extends StatelessWidget {
@@ -21,8 +23,10 @@ class ExpenseBarChart extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     // Process expenses by day for the selected month
-    final daysInMonth =
-        DateUtils.getDaysInMonth(selectedMonth.year, selectedMonth.month);
+    final daysInMonth = DateUtils.getDaysInMonth(
+      selectedMonth.year,
+      selectedMonth.month,
+    );
     final List<double> dailyTotals = List.filled(daysInMonth, 0.0);
 
     for (var expense in expenses) {
@@ -72,17 +76,12 @@ class ExpenseBarChart extends StatelessWidget {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: barColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  Icons.bar_chart_rounded,
-                  size: 18,
-                  color: barColor,
-                ),
+                child: Icon(Icons.bar_chart_rounded, size: 18, color: barColor),
               ),
             ],
           ),
@@ -148,50 +147,50 @@ class ExpenseBarChart extends StatelessWidget {
                       reservedSize: 22,
                     ),
                   ),
-                  leftTitles:
-                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles:
-                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles:
-                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
                 gridData: const FlGridData(show: false),
                 borderData: FlBorderData(show: false),
-                barGroups: List.generate(
-                  daysInMonth,
-                  (index) {
-                    final day = index + 1;
-                    final amount = dailyTotals[index];
-                    return BarChartGroupData(
-                      x: day,
-                      barRods: [
-                        BarChartRodData(
-                          toY: amount > 0 ? amount : maxAmount * 0.04,
-                          gradient: amount > 0
-                              ? LinearGradient(
-                                  colors: [
-                                    barColor.withValues(alpha: 0.7),
-                                    barColor,
-                                  ],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                )
-                              : null,
-                          color: amount > 0 ? null : barEmptyColor,
-                          width: daysInMonth > 30 ? 4 : 6,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(4),
-                          ),
-                          backDrawRodData: BackgroundBarChartRodData(
-                            show: true,
-                            toY: maxAmount,
-                            color: barEmptyColor,
-                          ),
+                barGroups: List.generate(daysInMonth, (index) {
+                  final day = index + 1;
+                  final amount = dailyTotals[index];
+                  return BarChartGroupData(
+                    x: day,
+                    barRods: [
+                      BarChartRodData(
+                        toY: amount > 0 ? amount : maxAmount * 0.04,
+                        gradient: amount > 0
+                            ? LinearGradient(
+                                colors: [
+                                  barColor.withValues(alpha: 0.7),
+                                  barColor,
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                              )
+                            : null,
+                        color: amount > 0 ? null : barEmptyColor,
+                        width: daysInMonth > 30 ? 4 : 6,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(4),
                         ),
-                      ],
-                    );
-                  },
-                ),
+                        backDrawRodData: BackgroundBarChartRodData(
+                          show: true,
+                          toY: maxAmount,
+                          color: barEmptyColor,
+                        ),
+                      ),
+                    ],
+                  );
+                }),
               ),
             ),
           ),

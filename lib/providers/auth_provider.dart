@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import '../services/auth_service.dart';
 
 /// Manages authentication state with ChangeNotifier.
@@ -48,10 +49,7 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
 
     try {
-      await _authService.registerWithEmail(
-        email: email,
-        password: password,
-      );
+      await _authService.registerWithEmail(email: email, password: password);
       _setLoading(false);
       return true;
     } catch (e) {
@@ -70,10 +68,7 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
 
     try {
-      await _authService.signInWithEmail(
-        email: email,
-        password: password,
-      );
+      await _authService.signInWithEmail(email: email, password: password);
       _setLoading(false);
       return true;
     } catch (e) {

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../models/expense.dart';
 import '../providers/auth_provider.dart';
 import '../providers/expense_provider.dart';
@@ -56,18 +57,14 @@ class _HomeScreenState extends State<HomeScreen>
   void _navigateToAdd() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const AddEditExpenseScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const AddEditExpenseScreen()),
     );
   }
 
   void _navigateToEdit(Expense expense) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => AddEditExpenseScreen(expense: expense),
-      ),
+      MaterialPageRoute(builder: (_) => AddEditExpenseScreen(expense: expense)),
     );
   }
 
@@ -100,8 +97,9 @@ class _HomeScreenState extends State<HomeScreen>
     final isDark = theme.brightness == Brightness.dark;
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.currentUser;
-    final accentColor =
-        isDark ? const Color(0xFF4ADE80) : const Color(0xFF00897B);
+    final accentColor = isDark
+        ? const Color(0xFF4ADE80)
+        : const Color(0xFF00897B);
 
     return Scaffold(
       appBar: AppBar(
@@ -112,9 +110,9 @@ class _HomeScreenState extends State<HomeScreen>
             builder: (context, themeProvider, _) {
               final isCurrentlyDark =
                   themeProvider.themeMode == ThemeMode.dark ||
-                      (themeProvider.themeMode == ThemeMode.system &&
-                          MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark);
+                  (themeProvider.themeMode == ThemeMode.system &&
+                      MediaQuery.platformBrightnessOf(context) ==
+                          Brightness.dark);
               return IconButton(
                 icon: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
@@ -147,8 +145,8 @@ class _HomeScreenState extends State<HomeScreen>
                       const SearchScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
+                        return FadeTransition(opacity: animation, child: child);
+                      },
                 ),
               );
             },
@@ -159,9 +157,7 @@ class _HomeScreenState extends State<HomeScreen>
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const SummaryScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const SummaryScreen()),
               );
             },
             tooltip: 'Monthly summary',
@@ -169,13 +165,15 @@ class _HomeScreenState extends State<HomeScreen>
           // User avatar / sign out
           PopupMenuButton<String>(
             offset: const Offset(0, 48),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             icon: CircleAvatar(
               radius: 16,
               backgroundColor: accentColor.withValues(alpha: 0.15),
-              backgroundImage:
-                  user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
+              backgroundImage: user?.photoURL != null
+                  ? NetworkImage(user!.photoURL!)
+                  : null,
               child: user?.photoURL == null
                   ? Text(
                       (user?.displayName ?? user?.email ?? '?')
@@ -264,9 +262,7 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 8),
 
               // ── Expense List ──────────────────────────────────────
-              Expanded(
-                child: _buildBody(provider, theme),
-              ),
+              Expanded(child: _buildBody(provider, theme)),
             ],
           );
         },
@@ -284,16 +280,14 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildBody(ExpenseProvider provider, ThemeData theme) {
     final isDark = theme.brightness == Brightness.dark;
-    final accentColor =
-        isDark ? const Color(0xFF4ADE80) : const Color(0xFF00897B);
+    final accentColor = isDark
+        ? const Color(0xFF4ADE80)
+        : const Color(0xFF00897B);
 
     // Loading state
     if (provider.isLoading) {
       return Center(
-        child: CircularProgressIndicator(
-          color: accentColor,
-          strokeWidth: 3,
-        ),
+        child: CircularProgressIndicator(color: accentColor, strokeWidth: 3),
       );
     }
 
@@ -379,8 +373,9 @@ class _HomeScreenState extends State<HomeScreen>
                 'Tap "Add Expense" to start tracking\nyour spending',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color:
-                      theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.7,
+                  ),
                   height: 1.4,
                 ),
               ),
@@ -413,8 +408,10 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               // Date group header
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 child: Text(
                   AppFormatters.groupHeader(date),
                   style: theme.textTheme.labelLarge?.copyWith(

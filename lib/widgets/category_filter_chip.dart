@@ -1,6 +1,7 @@
 // lib/widgets/category_filter_chip.dart
 
 import 'package:flutter/material.dart';
+
 import '../utils/constants.dart';
 
 /// A horizontal scrollable row of filter chips for expense categories.
@@ -49,12 +50,13 @@ class CategoryFilterChips extends StatelessWidget {
               side: BorderSide(
                 color: selectedCategory == null
                     ? (isDark
-                        ? const Color(0xFF4ADE80).withValues(alpha: 0.4)
-                        : theme.colorScheme.primary.withValues(alpha: 0.5))
+                          ? const Color(0xFF4ADE80).withValues(alpha: 0.4)
+                          : theme.colorScheme.primary.withValues(alpha: 0.5))
                     : (isDark
-                        ? const Color(0xFF253345)
-                        : theme.colorScheme.outlineVariant
-                            .withValues(alpha: 0.5)),
+                          ? const Color(0xFF253345)
+                          : theme.colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
+                            )),
               ),
               labelStyle: TextStyle(
                 fontWeight: selectedCategory == null
@@ -62,8 +64,8 @@ class CategoryFilterChips extends StatelessWidget {
                     : FontWeight.w500,
                 color: selectedCategory == null
                     ? (isDark
-                        ? const Color(0xFF4ADE80)
-                        : theme.colorScheme.primary)
+                          ? const Color(0xFF4ADE80)
+                          : theme.colorScheme.primary)
                     : theme.colorScheme.onSurfaceVariant,
               ),
               padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -78,11 +80,12 @@ class CategoryFilterChips extends StatelessWidget {
                 avatar: Icon(cat.icon, size: 16, color: cat.color),
                 label: Text(cat.name),
                 selected: isSelected,
-                onSelected: (_) => onCategorySelected(
-                  isSelected ? null : cat.name,
-                ),
+                onSelected: (_) =>
+                    onCategorySelected(isSelected ? null : cat.name),
                 showCheckmark: false,
-                selectedColor: cat.color.withValues(alpha: isDark ? 0.15 : 0.12),
+                selectedColor: cat.color.withValues(
+                  alpha: isDark ? 0.15 : 0.12,
+                ),
                 backgroundColor: isDark
                     ? const Color(0xFF1A2332)
                     : theme.colorScheme.surface,
@@ -90,9 +93,10 @@ class CategoryFilterChips extends StatelessWidget {
                   color: isSelected
                       ? cat.color.withValues(alpha: 0.5)
                       : (isDark
-                          ? const Color(0xFF253345)
-                          : theme.colorScheme.outlineVariant
-                              .withValues(alpha: 0.5)),
+                            ? const Color(0xFF253345)
+                            : theme.colorScheme.outlineVariant.withValues(
+                                alpha: 0.5,
+                              )),
                 ),
                 labelStyle: TextStyle(
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,

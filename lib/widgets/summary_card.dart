@@ -1,6 +1,7 @@
 // lib/widgets/summary_card.dart
 
 import 'package:flutter/material.dart';
+
 import '../utils/formatters.dart';
 
 /// A prominent card displaying the total expenses for the selected month.
@@ -8,11 +9,7 @@ class SummaryCard extends StatelessWidget {
   final double total;
   final DateTime month;
 
-  const SummaryCard({
-    super.key,
-    required this.total,
-    required this.month,
-  });
+  const SummaryCard({super.key, required this.total, required this.month});
 
   @override
   Widget build(BuildContext context) {
@@ -26,23 +23,15 @@ class SummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [
-                  const Color(0xFF1B4332),
-                  const Color(0xFF0A2F1A),
-                ]
-              : [
-                  const Color(0xFF00897B),
-                  const Color(0xFF00695C),
-                ],
+              ? [const Color(0xFF1B4332), const Color(0xFF0A2F1A)]
+              : [const Color(0xFF00897B), const Color(0xFF00695C)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: (isDark
-                    ? const Color(0xFF4ADE80)
-                    : const Color(0xFF00897B))
+            color: (isDark ? const Color(0xFF4ADE80) : const Color(0xFF00897B))
                 .withValues(alpha: isDark ? 0.15 : 0.25),
             blurRadius: 20,
             offset: const Offset(0, 8),
@@ -83,8 +72,10 @@ class SummaryCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),

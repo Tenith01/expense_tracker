@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
+
 import '../providers/expense_provider.dart';
 import '../utils/constants.dart';
 import '../utils/formatters.dart';
@@ -15,23 +16,19 @@ class SummaryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final accentColor =
-        isDark ? const Color(0xFF4ADE80) : const Color(0xFF00897B);
+    final accentColor = isDark
+        ? const Color(0xFF4ADE80)
+        : const Color(0xFF00897B);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Monthly Summary'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Monthly Summary'), centerTitle: true),
       body: Consumer<ExpenseProvider>(
         builder: (context, provider, _) {
           final categoryTotals = provider.categoryTotals;
           final totalExpenses = provider.totalExpenses;
 
           if (provider.isLoading) {
-            return Center(
-              child: CircularProgressIndicator(color: accentColor),
-            );
+            return Center(child: CircularProgressIndicator(color: accentColor));
           }
 
           if (totalExpenses == 0) {
@@ -109,8 +106,9 @@ class SummaryScreen extends StatelessWidget {
                         sectionsSpace: 3,
                         centerSpaceRadius: 65,
                         sections: sortedCategories.map((entry) {
-                          final category =
-                              AppConstants.getCategoryByName(entry.key);
+                          final category = AppConstants.getCategoryByName(
+                            entry.key,
+                          );
                           final percentage =
                               (entry.value / totalExpenses) * 100;
                           return PieChartSectionData(
@@ -123,7 +121,7 @@ class SummaryScreen extends StatelessWidget {
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
                               shadows: [
-                                Shadow(color: Colors.black38, blurRadius: 4)
+                                Shadow(color: Colors.black38, blurRadius: 4),
                               ],
                             ),
                           );
@@ -160,8 +158,10 @@ class SummaryScreen extends StatelessWidget {
 
               // Section header
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 4,
+                ),
                 child: Row(
                   children: [
                     Text(
@@ -187,27 +187,28 @@ class SummaryScreen extends StatelessWidget {
               Expanded(
                 child: ListView.builder(
                   physics: const BouncingScrollPhysics(),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   itemCount: sortedCategories.length,
                   itemBuilder: (context, index) {
                     final entry = sortedCategories[index];
-                    final category =
-                        AppConstants.getCategoryByName(entry.key);
+                    final category = AppConstants.getCategoryByName(entry.key);
                     final percentage = (entry.value / totalExpenses) * 100;
 
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 4),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color:
-                            isDark ? const Color(0xFF1A2332) : Colors.white,
+                        color: isDark ? const Color(0xFF1A2332) : Colors.white,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                           color: isDark
                               ? const Color(0xFF253345)
-                              : theme.colorScheme.outlineVariant
-                                  .withValues(alpha: 0.3),
+                              : theme.colorScheme.outlineVariant.withValues(
+                                  alpha: 0.3,
+                                ),
                         ),
                       ),
                       child: Row(
@@ -239,8 +240,7 @@ class SummaryScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   category.name,
-                                  style:
-                                      theme.textTheme.bodyLarge?.copyWith(
+                                  style: theme.textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     letterSpacing: -0.2,
                                   ),
@@ -252,8 +252,9 @@ class SummaryScreen extends StatelessWidget {
                                     value: percentage / 100,
                                     backgroundColor: isDark
                                         ? const Color(0xFF253345)
-                                        : theme.colorScheme
-                                            .surfaceContainerHighest,
+                                        : theme
+                                              .colorScheme
+                                              .surfaceContainerHighest,
                                     color: category.color,
                                     minHeight: 6,
                                   ),
@@ -267,8 +268,7 @@ class SummaryScreen extends StatelessWidget {
                             children: [
                               Text(
                                 AppFormatters.currency(entry.value),
-                                style:
-                                    theme.textTheme.bodyLarge?.copyWith(
+                                style: theme.textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: -0.3,
                                 ),
@@ -280,14 +280,12 @@ class SummaryScreen extends StatelessWidget {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: category.color
-                                      .withValues(alpha: 0.1),
+                                  color: category.color.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   '${percentage.toStringAsFixed(1)}%',
-                                  style:
-                                      theme.textTheme.labelSmall?.copyWith(
+                                  style: theme.textTheme.labelSmall?.copyWith(
                                     color: category.color,
                                     fontWeight: FontWeight.w700,
                                   ),

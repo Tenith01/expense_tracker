@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/auth_provider.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -32,13 +33,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
       parent: _animController,
       curve: Curves.easeOut,
     );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeOutCubic,
-    ));
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
     _animController.forward();
   }
 
@@ -63,12 +61,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text(authProvider.errorMessage ?? 'Failed to send reset email.'),
+            content: Text(
+              authProvider.errorMessage ?? 'Failed to send reset email.',
+            ),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Theme.of(context).colorScheme.error,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -81,10 +81,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -93,7 +90,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
               opacity: _fadeAnimation,
               child: SlideTransition(
                 position: _slideAnimation,
-                child: _emailSent ? _buildSuccessView(theme, colorScheme) : _buildFormView(theme, colorScheme),
+                child: _emailSent
+                    ? _buildSuccessView(theme, colorScheme)
+                    : _buildFormView(theme, colorScheme),
               ),
             ),
           ),
@@ -275,8 +274,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
               width: double.infinity,
               height: 52,
               child: FilledButton(
-                onPressed:
-                    authProvider.isLoading ? null : _handleResetPassword,
+                onPressed: authProvider.isLoading ? null : _handleResetPassword,
                 style: FilledButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
