@@ -5,11 +5,11 @@ import 'package:intl/intl.dart';
 class AppFormatters {
   AppFormatters._();
 
-  /// Format currency (e.g., "₹1,250.00")
+  /// Format currency (e.g., "LKR 1,250.00")
   static String currency(double amount) {
     final formatter = NumberFormat.currency(
-      locale: 'en_IN',
-      symbol: '₹',
+      locale: 'en_US',
+      symbol: 'LKR ',
       decimalDigits: 2,
     );
     return formatter.format(amount);

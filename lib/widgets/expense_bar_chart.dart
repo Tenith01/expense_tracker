@@ -18,13 +18,15 @@ class ExpenseBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+    final isDark = theme.brightness == Brightness.dark;
+
     // Process expenses by day for the selected month
-    final daysInMonth = DateUtils.getDaysInMonth(selectedMonth.year, selectedMonth.month);
+    final daysInMonth =
+        DateUtils.getDaysInMonth(selectedMonth.year, selectedMonth.month);
     final List<double> dailyTotals = List.filled(daysInMonth, 0.0);
-    
+
     for (var expense in expenses) {
-      if (expense.date.year == selectedMonth.year && 
+      if (expense.date.year == selectedMonth.year &&
           expense.date.month == selectedMonth.month) {
         dailyTotals[expense.date.day - 1] += expense.amount;
       }
@@ -37,15 +39,22 @@ class ExpenseBarChart extends StatelessWidget {
     }
     if (maxAmount == 0) maxAmount = 1; // Prevent division by zero
 
+    final barColor = isDark ? const Color(0xFF4ADE80) : const Color(0xFF00897B);
+    final barEmptyColor = isDark
+        ? const Color(0xFF253345)
+        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4);
+
     return Container(
-      height: 140,
+      height: 150,
       padding: const EdgeInsets.only(top: 16, right: 16, left: 16, bottom: 8),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: isDark ? const Color(0xFF1A2332) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+          color: isDark
+              ? const Color(0xFF253345)
+              : theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -57,14 +66,23 @@ class ExpenseBarChart extends StatelessWidget {
               Text(
                 'Daily Spending',
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.onSurface,
+                  letterSpacing: -0.2,
                 ),
               ),
-              Icon(
-                Icons.bar_chart_rounded,
-                size: 20,
-                color: theme.colorScheme.onSurfaceVariant,
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: barColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.bar_chart_rounded,
+                  size: 18,
+                  color: barColor,
+                ),
               ),
             ],
           ),
@@ -77,18 +95,25 @@ class ExpenseBarChart extends StatelessWidget {
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (group) => theme.colorScheme.primaryContainer,
+                    tooltipPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    getTooltipColor: (group) => isDark
+                        ? const Color(0xFF253345)
+                        : theme.colorScheme.primaryContainer,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       return BarTooltipItem(
                         '${group.x.toInt()} ${DateFormat('MMM').format(selectedMonth)}\n',
                         theme.textTheme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface,
                         ),
                         children: [
                           TextSpan(
-                            text: '₹${rod.toY.toStringAsFixed(0)}',
+                            text: 'LKR ${rod.toY.toStringAsFixed(0)}',
                             style: theme.textTheme.titleSmall?.copyWith(
-                              color: theme.colorScheme.primary,
+                              color: barColor,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -112,8 +137,10 @@ class ExpenseBarChart extends StatelessWidget {
                           child: Text(
                             day.toString(),
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                              color: theme.colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.7),
                               fontSize: 10,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         );
@@ -121,9 +148,12 @@ class ExpenseBarChart extends StatelessWidget {
                       reservedSize: 22,
                     ),
                   ),
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles:
+                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles:
+                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles:
+                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 gridData: const FlGridData(show: false),
                 borderData: FlBorderData(show: false),
@@ -136,10 +166,18 @@ class ExpenseBarChart extends StatelessWidget {
                       x: day,
                       barRods: [
                         BarChartRodData(
-                          toY: amount,
-                          color: amount > 0 
-                              ? theme.colorScheme.primary 
-                              : theme.colorScheme.surfaceContainerHighest,
+                          toY: amount > 0 ? amount : maxAmount * 0.04,
+                          gradient: amount > 0
+                              ? LinearGradient(
+                                  colors: [
+                                    barColor.withValues(alpha: 0.7),
+                                    barColor,
+                                  ],
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                )
+                              : null,
+                          color: amount > 0 ? null : barEmptyColor,
                           width: daysInMonth > 30 ? 4 : 6,
                           borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(4),
@@ -147,7 +185,7 @@ class ExpenseBarChart extends StatelessWidget {
                           backDrawRodData: BackgroundBarChartRodData(
                             show: true,
                             toY: maxAmount,
-                            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                            color: barEmptyColor,
                           ),
                         ),
                       ],
