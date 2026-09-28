@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import 'login_screen.dart';
+
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -66,15 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen>
 
     if (mounted) {
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Account created successfully!'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        );
+        Navigator.of(context).popUntil((route) => route.isFirst);
       } else {
         _showError(authProvider.errorMessage ?? 'Registration failed.');
       }
@@ -85,7 +77,9 @@ class _RegisterScreenState extends State<RegisterScreen>
     final authProvider = context.read<AuthProvider>();
     final success = await authProvider.signInWithGoogle();
 
-    if (!success && mounted && authProvider.errorMessage != null) {
+    if (success && mounted) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } else if (!success && mounted && authProvider.errorMessage != null) {
       _showError(authProvider.errorMessage!);
     }
   }
@@ -359,12 +353,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const LoginScreen(),
-                              ),
-                            );
+                            Navigator.pop(context);
                           },
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
