@@ -10,6 +10,7 @@ import '../widgets/category_filter_chip.dart';
 import '../widgets/expense_tile.dart';
 import '../widgets/month_selector.dart';
 import '../widgets/summary_card.dart';
+import '../widgets/expense_bar_chart.dart';
 import 'add_edit_expense_screen.dart';
 import 'summary_screen.dart';
 
@@ -168,6 +169,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 total: provider.totalExpenses,
                 month: provider.selectedMonth,
               ),
+
+              // ── Daily Expense Chart ───────────────────────────────
+              if (provider.expenses.isNotEmpty)
+                ExpenseBarChart(
+                  expenses: provider.expenses,
+                  selectedMonth: provider.selectedMonth,
+                ),
 
               // ── Month Selector ────────────────────────────────────
               MonthSelector(
