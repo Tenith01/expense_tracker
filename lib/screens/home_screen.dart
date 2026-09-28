@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Expense Tracker'),
-        centerTitle: true,
+        centerTitle: false,
         actions: [
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, _) {
