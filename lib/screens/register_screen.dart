@@ -125,8 +125,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            colorScheme.tertiary,
-                            colorScheme.primary,
+                            const Color(0xFF00695C),
+                            const Color(0xFF00897B),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -134,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: colorScheme.tertiary.withValues(alpha: 0.3),
+                            color: const Color(0xFF00897B).withValues(alpha: 0.3),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -321,15 +321,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                             onPressed: authProvider.isLoading
                                 ? null
                                 : _handleGoogleSignIn,
-                            icon: Image.network(
-                              'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                            icon: Image.asset(
+                              'assets/images/google_logo.png',
                               width: 22,
                               height: 22,
-                              errorBuilder: (context, error, stackTrace) => Icon(
-                                Icons.g_mobiledata_rounded,
-                                size: 28,
-                                color: colorScheme.primary,
-                              ),
                             ),
                             label: const Text(
                               'Continue with Google',
@@ -362,8 +357,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
+                        TextButton(
+                          onPressed: () {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -371,6 +366,15 @@ class _RegisterScreenState extends State<RegisterScreen>
                               ),
                             );
                           },
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                          ),
                           child: Text(
                             'Sign In',
                             style: TextStyle(

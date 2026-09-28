@@ -111,8 +111,8 @@ class _LoginScreenState extends State<LoginScreen>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            colorScheme.primary,
-                            colorScheme.tertiary,
+                            const Color(0xFF00897B),
+                            const Color(0xFF00695C),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen>
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: colorScheme.primary.withValues(alpha: 0.3),
+                            color: const Color(0xFF00897B).withValues(alpha: 0.3),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -303,15 +303,10 @@ class _LoginScreenState extends State<LoginScreen>
                             onPressed: authProvider.isLoading
                                 ? null
                                 : _handleGoogleLogin,
-                            icon: Image.network(
-                              'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                            icon: Image.asset(
+                              'assets/images/google_logo.png',
                               width: 22,
                               height: 22,
-                              errorBuilder: (context, error, stackTrace) => Icon(
-                                Icons.g_mobiledata_rounded,
-                                size: 28,
-                                color: colorScheme.primary,
-                              ),
                             ),
                             label: const Text(
                               'Continue with Google',
@@ -344,8 +339,8 @@ class _LoginScreenState extends State<LoginScreen>
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
+                        TextButton(
+                          onPressed: () {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -353,6 +348,15 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             );
                           },
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                          ),
                           child: Text(
                             'Sign Up',
                             style: TextStyle(
