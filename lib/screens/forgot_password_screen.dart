@@ -202,7 +202,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
             gradient: LinearGradient(
               colors: [
                 colorScheme.error.withValues(alpha: 0.8),
-                colorScheme.tertiary,
+                const Color(0xFF00897B),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,

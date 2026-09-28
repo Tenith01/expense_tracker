@@ -23,14 +23,34 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _fabAnimController;
+  late final Animation<double> _fabScaleAnimation;
+
   @override
   void initState() {
     super.initState();
+    _fabAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _fabScaleAnimation = CurvedAnimation(
+      parent: _fabAnimController,
+      curve: Curves.elasticOut,
+    );
+
     // Fetch expenses on first load.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ExpenseProvider>().fetchExpenses();
+      _fabAnimController.forward();
     });
+  }
+
+  @override
+  void dispose() {
+    _fabAnimController.dispose();
+    super.dispose();
   }
 
   void _navigateToAdd() {
@@ -55,7 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Sign Out'),
         content: const Text('Are you sure you want to sign out?'),
         actions: [
@@ -78,8 +97,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.currentUser;
+    final accentColor =
+        isDark ? const Color(0xFF4ADE80) : const Color(0xFF00897B);
 
     return Scaffold(
       appBar: AppBar(
@@ -88,24 +110,35 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, _) {
-              final isDark = themeProvider.themeMode == ThemeMode.dark ||
-                  (themeProvider.themeMode == ThemeMode.system &&
-                      MediaQuery.platformBrightnessOf(context) ==
-                          Brightness.dark);
+              final isCurrentlyDark =
+                  themeProvider.themeMode == ThemeMode.dark ||
+                      (themeProvider.themeMode == ThemeMode.system &&
+                          MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark);
               return IconButton(
-                icon: Icon(
-                  isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                  color: isDark ? const Color(0xFF00E676) : const Color(0xFF00BFA5),
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, anim) => RotationTransition(
+                    turns: Tween(begin: 0.75, end: 1.0).animate(anim),
+                    child: FadeTransition(opacity: anim, child: child),
+                  ),
+                  child: Icon(
+                    isCurrentlyDark
+                        ? Icons.light_mode_rounded
+                        : Icons.dark_mode_rounded,
+                    key: ValueKey(isCurrentlyDark),
+                    color: accentColor,
+                  ),
                 ),
-                onPressed: () => themeProvider.toggleTheme(!isDark),
+                onPressed: () => themeProvider.toggleTheme(!isCurrentlyDark),
+                tooltip: isCurrentlyDark
+                    ? 'Switch to light mode'
+                    : 'Switch to dark mode',
               );
             },
           ),
           IconButton(
-            icon: const Hero(
-              tag: 'search_bar',
-              child: Icon(Icons.search_rounded),
-            ),
+            icon: const Icon(Icons.search_rounded),
             onPressed: () {
               Navigator.push(
                 context,
@@ -119,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             },
+            tooltip: 'Search expenses',
           ),
           IconButton(
             icon: const Icon(Icons.pie_chart_rounded),
@@ -130,15 +164,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             },
+            tooltip: 'Monthly summary',
           ),
           // User avatar / sign out
           PopupMenuButton<String>(
             offset: const Offset(0, 48),
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             icon: CircleAvatar(
               radius: 16,
-              backgroundColor: theme.colorScheme.primaryContainer,
+              backgroundColor: accentColor.withValues(alpha: 0.15),
               backgroundImage:
                   user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
               child: user?.photoURL == null
@@ -147,8 +182,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           .substring(0, 1)
                           .toUpperCase(),
                       style: TextStyle(
-                        color: theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w600,
+                        color: accentColor,
+                        fontWeight: FontWeight.w700,
                         fontSize: 14,
                       ),
                     )
@@ -163,16 +198,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       user?.displayName ?? 'User',
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       user?.email ?? '',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    const Divider(),
+                    const Divider(height: 16),
                   ],
                 ),
               ),
@@ -235,18 +271,30 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _navigateToAdd,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Add Expense'),
+      floatingActionButton: ScaleTransition(
+        scale: _fabScaleAnimation,
+        child: FloatingActionButton.extended(
+          onPressed: _navigateToAdd,
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Add Expense'),
+        ),
       ),
     );
   }
 
   Widget _buildBody(ExpenseProvider provider, ThemeData theme) {
+    final isDark = theme.brightness == Brightness.dark;
+    final accentColor =
+        isDark ? const Color(0xFF4ADE80) : const Color(0xFF00897B);
+
     // Loading state
     if (provider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: CircularProgressIndicator(
+          color: accentColor,
+          strokeWidth: 3,
+        ),
+      );
     }
 
     // Error state
@@ -257,24 +305,39 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.cloud_off_rounded,
-                size: 64,
-                color: theme.colorScheme.error.withValues(alpha: 0.6),
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.error.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.cloud_off_rounded,
+                  size: 36,
+                  color: theme.colorScheme.error.withValues(alpha: 0.7),
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
+              Text(
+                'Something went wrong',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
               Text(
                 provider.errorMessage!,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.error,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               FilledButton.icon(
                 onPressed: provider.fetchExpenses,
-                icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Retry'),
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: const Text('Try Again'),
               ),
             ],
           ),
@@ -290,23 +353,35 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.receipt_long_rounded,
-                size: 64,
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.receipt_long_rounded,
+                  size: 40,
+                  color: accentColor.withValues(alpha: 0.5),
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Text(
                 'No expenses yet',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Text(
-                'Tap "Add Expense" to get started',
+                'Tap "Add Expense" to start tracking\nyour spending',
+                textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  color:
+                      theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  height: 1.4,
                 ),
               ),
             ],
@@ -321,7 +396,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return RefreshIndicator(
       onRefresh: provider.fetchExpenses,
+      color: accentColor,
       child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
         padding: const EdgeInsets.only(bottom: 88),
         itemCount: sortedKeys.length,
         itemBuilder: (context, index) {
@@ -335,12 +414,13 @@ class _HomeScreenState extends State<HomeScreen> {
               // Date group header
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Text(
                   AppFormatters.groupHeader(date),
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
                   ),
                 ),
               ),

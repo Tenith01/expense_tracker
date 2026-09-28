@@ -14,6 +14,9 @@ class SummaryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final accentColor =
+        isDark ? const Color(0xFF4ADE80) : const Color(0xFF00897B);
 
     return Scaffold(
       appBar: AppBar(
@@ -24,9 +27,11 @@ class SummaryScreen extends StatelessWidget {
         builder: (context, provider, _) {
           final categoryTotals = provider.categoryTotals;
           final totalExpenses = provider.totalExpenses;
-          
+
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(color: accentColor),
+            );
           }
 
           if (totalExpenses == 0) {
@@ -42,16 +47,35 @@ class SummaryScreen extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.pie_chart_outline_rounded,
-                          size: 64,
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: accentColor.withValues(alpha: 0.08),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.pie_chart_outline_rounded,
+                            size: 40,
+                            color: accentColor.withValues(alpha: 0.5),
+                          ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
                         Text(
                           'No expenses this month',
                           style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Add expenses to see your\nspending breakdown',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.7),
+                            height: 1.4,
                           ),
                         ),
                       ],
@@ -74,7 +98,7 @@ class SummaryScreen extends StatelessWidget {
                 onNext: provider.goToNextMonth,
               ),
               const SizedBox(height: 16),
-              
+
               // Chart
               SizedBox(
                 height: 250,
@@ -82,21 +106,25 @@ class SummaryScreen extends StatelessWidget {
                   children: [
                     PieChart(
                       PieChartData(
-                        sectionsSpace: 2,
-                        centerSpaceRadius: 70,
+                        sectionsSpace: 3,
+                        centerSpaceRadius: 65,
                         sections: sortedCategories.map((entry) {
-                          final category = AppConstants.getCategoryByName(entry.key);
-                          final percentage = (entry.value / totalExpenses) * 100;
+                          final category =
+                              AppConstants.getCategoryByName(entry.key);
+                          final percentage =
+                              (entry.value / totalExpenses) * 100;
                           return PieChartSectionData(
                             color: category.color,
                             value: entry.value,
                             title: '${percentage.toStringAsFixed(1)}%',
-                            radius: 40,
+                            radius: 45,
                             titleStyle: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
                               color: Colors.white,
-                              shadows: [Shadow(color: Colors.black26, blurRadius: 2)],
+                              shadows: [
+                                Shadow(color: Colors.black38, blurRadius: 4)
+                              ],
                             ),
                           );
                         }).toList(),
@@ -110,13 +138,16 @@ class SummaryScreen extends StatelessWidget {
                             'Total',
                             style: theme.textTheme.labelMedium?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
+                          const SizedBox(height: 4),
                           Text(
                             AppFormatters.currency(totalExpenses),
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onSurface,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: accentColor,
+                              letterSpacing: -0.3,
                             ),
                           ),
                         ],
@@ -125,55 +156,146 @@ class SummaryScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              
+              const SizedBox(height: 20),
+
+              // Section header
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                child: Row(
+                  children: [
+                    Text(
+                      'Category Breakdown',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${sortedCategories.length} categories',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4),
+
               // Category Breakdown List
               Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   itemCount: sortedCategories.length,
-                  separatorBuilder: (context, index) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final entry = sortedCategories[index];
-                    final category = AppConstants.getCategoryByName(entry.key);
+                    final category =
+                        AppConstants.getCategoryByName(entry.key);
                     final percentage = (entry.value / totalExpenses) * 100;
-                    
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: category.color.withValues(alpha: 0.2),
-                        child: Icon(category.icon, color: category.color),
-                      ),
-                      title: Text(
-                        category.name,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
+
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color:
+                            isDark ? const Color(0xFF1A2332) : Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF253345)
+                              : theme.colorScheme.outlineVariant
+                                  .withValues(alpha: 0.3),
                         ),
                       ),
-                      subtitle: Row(
+                      child: Row(
                         children: [
-                          Expanded(
-                            child: LinearProgressIndicator(
-                              value: percentage / 100,
-                              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  category.color.withValues(alpha: 0.15),
+                                  category.color.withValues(alpha: 0.08),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              category.icon,
                               color: category.color,
-                              borderRadius: BorderRadius.circular(4),
-                              minHeight: 6,
+                              size: 22,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            '${percentage.toStringAsFixed(1)}%',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  category.name,
+                                  style:
+                                      theme.textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: -0.2,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    value: percentage / 100,
+                                    backgroundColor: isDark
+                                        ? const Color(0xFF253345)
+                                        : theme.colorScheme
+                                            .surfaceContainerHighest,
+                                    color: category.color,
+                                    minHeight: 6,
+                                  ),
+                                ),
+                              ],
                             ),
+                          ),
+                          const SizedBox(width: 14),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                AppFormatters.currency(entry.value),
+                                style:
+                                    theme.textTheme.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: category.color
+                                      .withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  '${percentage.toStringAsFixed(1)}%',
+                                  style:
+                                      theme.textTheme.labelSmall?.copyWith(
+                                    color: category.color,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                      trailing: Text(
-                        AppFormatters.currency(entry.value),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
                     );
                   },

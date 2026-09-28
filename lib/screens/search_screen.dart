@@ -17,7 +17,7 @@ class _SearchScreenState extends State<SearchScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
-  
+
   List<Expense> _allExpenses = [];
   List<Expense> _searchResults = [];
   bool _isLoading = true;
@@ -97,8 +97,10 @@ class _SearchScreenState extends State<SearchScreen>
       }
 
       final titleMatch = expense.title.toLowerCase().contains(_searchQuery);
-      final categoryMatch = expense.category.toLowerCase().contains(_searchQuery);
-      final noteMatch = expense.note?.toLowerCase().contains(_searchQuery) ?? false;
+      final categoryMatch =
+          expense.category.toLowerCase().contains(_searchQuery);
+      final noteMatch =
+          expense.note?.toLowerCase().contains(_searchQuery) ?? false;
       final amountMatch = expense.amount.toString().contains(_searchQuery);
 
       return titleMatch || categoryMatch || noteMatch || amountMatch;
@@ -137,6 +139,9 @@ class _SearchScreenState extends State<SearchScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final accentColor =
+        isDark ? const Color(0xFF4ADE80) : const Color(0xFF00897B);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -149,54 +154,83 @@ class _SearchScreenState extends State<SearchScreen>
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded),
-                      onPressed: () => Navigator.pop(context),
-                      color: theme.colorScheme.onSurfaceVariant,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => Navigator.pop(context),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF253345)
+                              : theme.colorScheme.surfaceContainerHighest
+                                  .withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.arrow_back_rounded,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Hero(
-                      tag: 'search_bar',
-                      child: Material(
-                        color: Colors.transparent,
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: _onSearchChanged,
-                          autofocus: true,
-                          style: theme.textTheme.bodyLarge,
-                          decoration: InputDecoration(
-                            hintText: 'Search expenses...',
-                            prefixIcon: Icon(
-                              Icons.search_rounded,
-                              color: theme.colorScheme.primary,
-                            ),
-                            suffixIcon: _searchQuery.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(Icons.clear_rounded),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      _onSearchChanged('');
-                                    },
-                                  )
-                                : null,
-                            filled: true,
-                            fillColor: theme.colorScheme.surfaceContainerHighest,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(24),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 20,
-                            ),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: _onSearchChanged,
+                      autofocus: true,
+                      style: theme.textTheme.bodyLarge,
+                      decoration: InputDecoration(
+                        hintText: 'Search expenses...',
+                        prefixIcon: Icon(
+                          Icons.search_rounded,
+                          color: accentColor,
+                        ),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear_rounded),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  _onSearchChanged('');
+                                },
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: isDark
+                            ? const Color(0xFF1A2332)
+                            : theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.5),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF253345)
+                                : theme.colorScheme.outlineVariant
+                                    .withValues(alpha: 0.3),
                           ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF253345)
+                                : theme.colorScheme.outlineVariant
+                                    .withValues(alpha: 0.3),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: accentColor,
+                            width: 1.5,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 20,
                         ),
                       ),
                     ),
@@ -216,9 +250,10 @@ class _SearchScreenState extends State<SearchScreen>
                     children: [
                       Text(
                         'Quick Filters',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.primary,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: theme.colorScheme.onSurface,
+                          letterSpacing: -0.2,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -228,12 +263,21 @@ class _SearchScreenState extends State<SearchScreen>
                         children: _quickFilters.map((filter) {
                           return ActionChip(
                             label: Text(filter),
-                            backgroundColor: theme.colorScheme.secondaryContainer,
+                            backgroundColor: isDark
+                                ? const Color(0xFF1A2332)
+                                : theme.colorScheme.surface,
+                            side: BorderSide(
+                              color: isDark
+                                  ? const Color(0xFF253345)
+                                  : theme.colorScheme.outlineVariant
+                                      .withValues(alpha: 0.5),
+                            ),
                             labelStyle: TextStyle(
-                              color: theme.colorScheme.onSecondaryContainer,
+                              color: theme.colorScheme.onSurface,
+                              fontWeight: FontWeight.w500,
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             onPressed: () => _applyQuickFilter(filter),
                           );
@@ -248,12 +292,13 @@ class _SearchScreenState extends State<SearchScreen>
             // ── Results Label ────────────────────────────────────────────────
             if (_searchQuery.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
                 child: Text(
                   '${_searchResults.length} result${_searchResults.length == 1 ? '' : 's'}',
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -261,22 +306,41 @@ class _SearchScreenState extends State<SearchScreen>
             // ── Search Results List ──────────────────────────────────────────
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Center(
+                      child: CircularProgressIndicator(color: accentColor),
+                    )
                   : _searchResults.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.search_off_rounded,
-                                size: 64,
-                                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                              Container(
+                                width: 72,
+                                height: 72,
+                                decoration: BoxDecoration(
+                                  color: accentColor.withValues(alpha: 0.08),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.search_off_rounded,
+                                  size: 36,
+                                  color: accentColor.withValues(alpha: 0.5),
+                                ),
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 'No expenses found',
                                 style: theme.textTheme.titleMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Try a different search term',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.7),
                                 ),
                               ),
                             ],
@@ -284,7 +348,8 @@ class _SearchScreenState extends State<SearchScreen>
                         )
                       : ListView.builder(
                           physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.only(bottom: 88, top: 8),
+                          padding:
+                              const EdgeInsets.only(bottom: 88, top: 8),
                           itemCount: _searchResults.length,
                           itemBuilder: (context, index) {
                             final expense = _searchResults[index];
