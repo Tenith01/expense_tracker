@@ -11,6 +11,7 @@ import '../widgets/expense_tile.dart';
 import '../widgets/month_selector.dart';
 import '../widgets/summary_card.dart';
 import 'add_edit_expense_screen.dart';
+import 'summary_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -82,6 +83,17 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Expense Tracker'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.pie_chart_rounded),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SummaryScreen(),
+                ),
+              );
+            },
+          ),
           // User avatar / sign out
           PopupMenuButton<String>(
             offset: const Offset(0, 48),
