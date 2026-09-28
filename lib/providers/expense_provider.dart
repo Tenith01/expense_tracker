@@ -39,6 +39,19 @@ class ExpenseProvider extends ChangeNotifier {
     return grouped;
   }
 
+  /// Total expenses grouped by category for the current selected month.
+  Map<String, double> get categoryTotals {
+    final Map<String, double> totals = {};
+    for (final expense in _expenses) {
+      totals.update(
+        expense.category,
+        (value) => value + expense.amount,
+        ifAbsent: () => expense.amount,
+      );
+    }
+    return totals;
+  }
+
   // ── Month Navigation ───────────────────────────────────────────────────
 
   void goToPreviousMonth() {
