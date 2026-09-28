@@ -52,4 +52,10 @@ class FirestoreService {
     final snapshot = await query.get();
     return snapshot.docs.map((doc) => Expense.fromFirestore(doc)).toList();
   }
+
+  Future<List<Expense>> getAllExpenses() async {
+    final query = _expensesCollection().orderBy('date', descending: true);
+    final snapshot = await query.get();
+    return snapshot.docs.map((doc) => Expense.fromFirestore(doc)).toList();
+  }
 }
