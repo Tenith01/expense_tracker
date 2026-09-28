@@ -13,6 +13,7 @@ import '../widgets/summary_card.dart';
 import '../widgets/expense_bar_chart.dart';
 import 'add_edit_expense_screen.dart';
 import 'summary_screen.dart';
+import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -84,6 +85,25 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Expense Tracker'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Hero(
+              tag: 'search_bar',
+              child: Icon(Icons.search_rounded),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const SearchScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.pie_chart_rounded),
             onPressed: () {
