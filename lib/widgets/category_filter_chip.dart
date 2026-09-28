@@ -17,9 +17,10 @@ class CategoryFilterChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return SizedBox(
-      height: 44,
+      height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -29,15 +30,43 @@ class CategoryFilterChips extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: FilterChip(
               label: const Text('All'),
+              avatar: selectedCategory == null
+                  ? null
+                  : Icon(
+                      Icons.grid_view_rounded,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
               selected: selectedCategory == null,
               onSelected: (_) => onCategorySelected(null),
               showCheckmark: false,
-              selectedColor: theme.colorScheme.primaryContainer,
+              selectedColor: isDark
+                  ? const Color(0xFF4ADE80).withValues(alpha: 0.15)
+                  : theme.colorScheme.primaryContainer,
+              backgroundColor: isDark
+                  ? const Color(0xFF1A2332)
+                  : theme.colorScheme.surface,
+              side: BorderSide(
+                color: selectedCategory == null
+                    ? (isDark
+                        ? const Color(0xFF4ADE80).withValues(alpha: 0.4)
+                        : theme.colorScheme.primary.withValues(alpha: 0.5))
+                    : (isDark
+                        ? const Color(0xFF253345)
+                        : theme.colorScheme.outlineVariant
+                            .withValues(alpha: 0.5)),
+              ),
               labelStyle: TextStyle(
                 fontWeight: selectedCategory == null
-                    ? FontWeight.w600
-                    : FontWeight.normal,
+                    ? FontWeight.w700
+                    : FontWeight.w500,
+                color: selectedCategory == null
+                    ? (isDark
+                        ? const Color(0xFF4ADE80)
+                        : theme.colorScheme.primary)
+                    : theme.colorScheme.onSurfaceVariant,
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
             ),
           ),
           // Category chips
@@ -46,19 +75,32 @@ class CategoryFilterChips extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: FilterChip(
-                avatar: isSelected
-                    ? null
-                    : Icon(cat.icon, size: 16, color: cat.color),
+                avatar: Icon(cat.icon, size: 16, color: cat.color),
                 label: Text(cat.name),
                 selected: isSelected,
                 onSelected: (_) => onCategorySelected(
                   isSelected ? null : cat.name,
                 ),
                 showCheckmark: false,
-                selectedColor: cat.color.withValues(alpha: 0.2),
-                labelStyle: TextStyle(
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                selectedColor: cat.color.withValues(alpha: isDark ? 0.15 : 0.12),
+                backgroundColor: isDark
+                    ? const Color(0xFF1A2332)
+                    : theme.colorScheme.surface,
+                side: BorderSide(
+                  color: isSelected
+                      ? cat.color.withValues(alpha: 0.5)
+                      : (isDark
+                          ? const Color(0xFF253345)
+                          : theme.colorScheme.outlineVariant
+                              .withValues(alpha: 0.5)),
                 ),
+                labelStyle: TextStyle(
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected
+                      ? cat.color
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
               ),
             );
           }),

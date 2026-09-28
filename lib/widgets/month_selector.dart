@@ -26,29 +26,74 @@ class MonthSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
+          _buildArrowButton(
+            context,
+            icon: Icons.chevron_left_rounded,
             onPressed: onPrevious,
-            icon: const Icon(Icons.chevron_left_rounded),
             tooltip: 'Previous month',
+            isDark: isDark,
           ),
           Text(
             AppFormatters.monthYear(selectedMonth),
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
             ),
           ),
-          IconButton(
+          _buildArrowButton(
+            context,
+            icon: Icons.chevron_right_rounded,
             onPressed: _canGoNext ? onNext : null,
-            icon: const Icon(Icons.chevron_right_rounded),
             tooltip: 'Next month',
+            isDark: isDark,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildArrowButton(
+    BuildContext context, {
+    required IconData icon,
+    required VoidCallback? onPressed,
+    required String tooltip,
+    required bool isDark,
+  }) {
+    final theme = Theme.of(context);
+    final isEnabled = onPressed != null;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: isEnabled
+                ? (isDark
+                    ? const Color(0xFF253345)
+                    : theme.colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.5))
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            size: 24,
+            color: isEnabled
+                ? theme.colorScheme.onSurface
+                : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+          ),
+        ),
       ),
     );
   }
