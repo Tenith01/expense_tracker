@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/expense.dart';
 import '../providers/auth_provider.dart';
 import '../providers/expense_provider.dart';
+import '../providers/theme_provider.dart';
 import '../utils/formatters.dart';
 import '../widgets/category_filter_chip.dart';
 import '../widgets/expense_tile.dart';
@@ -85,6 +86,21 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Expense Tracker'),
         centerTitle: true,
         actions: [
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) {
+              final isDark = themeProvider.themeMode == ThemeMode.dark ||
+                  (themeProvider.themeMode == ThemeMode.system &&
+                      MediaQuery.platformBrightnessOf(context) ==
+                          Brightness.dark);
+              return IconButton(
+                icon: Icon(
+                  isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                  color: isDark ? const Color(0xFF00E676) : const Color(0xFF00BFA5),
+                ),
+                onPressed: () => themeProvider.toggleTheme(!isDark),
+              );
+            },
+          ),
           IconButton(
             icon: const Hero(
               tag: 'search_bar',
